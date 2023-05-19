@@ -5,7 +5,7 @@ import { UserDatabase } from "./UserDatabase";
 
 export class CommentDatabase extends BaseDatabase {
 
-    public static TABLE_COMMENTS = 'coments'
+    public static TABLE_COMMENTS = 'comments'
 
     public static TABLE_LIKES_DISLIKES_COMMENT = "likes_dislikes_comment"
 
@@ -22,6 +22,7 @@ export class CommentDatabase extends BaseDatabase {
             .connection(CommentDatabase.TABLE_COMMENTS)
             .select(
                 `${CommentDatabase.TABLE_COMMENTS}.id`,
+                `${CommentDatabase.TABLE_COMMENTS}.post_id`,
                 `${CommentDatabase.TABLE_COMMENTS}.creator_id`,
                 `${CommentDatabase.TABLE_COMMENTS}.content`,
                 `${CommentDatabase.TABLE_COMMENTS}.likes`,
@@ -65,7 +66,7 @@ export class CommentDatabase extends BaseDatabase {
             .where({ id })
     }
 
-    public async getCommentsByPostId(id: string) {
+    public async getCommentsByPostId(postId: string): Promise<CommentDBWithCreatorName[]> {
 
         const result = await BaseDatabase
             .connection(CommentDatabase.TABLE_COMMENTS)
@@ -78,7 +79,7 @@ export class CommentDatabase extends BaseDatabase {
                 `${CommentDatabase.TABLE_COMMENTS}.dislikes`,
                 `${CommentDatabase.TABLE_COMMENTS}.created_at`,
                 `${CommentDatabase.TABLE_COMMENTS}.updated_at`,
-                `${UserDatabase.TABLE_USERS}.nickname as creator_nickname`
+                `${UserDatabase.TABLE_USERS}.name as creator_name`
             )
             .join(
                 `${UserDatabase.TABLE_USERS}`,
@@ -86,9 +87,9 @@ export class CommentDatabase extends BaseDatabase {
                 "=",
                 `${UserDatabase.TABLE_USERS}.id`
             )
-            .where({ [`${PostDatabase.TABLE_POSTS}.id`]: id })
+            .where({ post_id: postId })//({ [`${PostDatabase.TABLE_POSTS}.id`]: postId })
 
-        return result
+        return result as CommentDBWithCreatorName[]
     }
 
     public async findCommentWithCreatorNameById(id: string): Promise<CommentDBWithCreatorName | undefined> {

@@ -12,13 +12,13 @@ export class UserDatabase extends BaseDatabase {
             .insert(userDB)
     }
 
-    public findUserByNickname = async (nickname: string): Promise<UserDB | undefined> => {
+    public findUserByName = async (name: string): Promise<UserDB | undefined> => {
 
         const [userDB] =
             await BaseDatabase
                 .connection(UserDatabase.TABLE_USERS)
                 .select()
-                .where({ nickname })
+                .where({ name })
 
         return userDB as UserDB | undefined
     }
