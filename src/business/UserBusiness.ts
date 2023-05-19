@@ -55,7 +55,7 @@ export class UserBusiness {
     public login = async (input: LoginInputDTO): Promise<LoginOutputDTO> => {
         const { email, password } = input
 
-        const userDB = await this.userDatabase.findUser(email)
+        const userDB = await this.userDatabase.findUserByEmail(email)
 
         if (!userDB) {
             throw new BadRequestError("e-mail e/ou senha inválido(s)")

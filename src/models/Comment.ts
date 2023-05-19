@@ -1,5 +1,6 @@
 export interface CommentDB {
     id: string,
+    post_id: string,
     creator_id: string,
     content: string,
     likes: number,
@@ -10,6 +11,7 @@ export interface CommentDB {
 
 export interface CommentDBWithCreatorName {
     id: string,
+    post_id: string,
     creator_id: string,
     content: string,
     likes: number,
@@ -21,11 +23,12 @@ export interface CommentDBWithCreatorName {
 
 export interface CommentModel {
     id: string,
+    post_id: string,
     content: string,
     likes: number,
     dislikes: number,
-    createdAt: string,
-    updatedAt: string,
+    created_at: string,
+    updated_at: string,
     creator: {
         id: string
         name: string
@@ -46,6 +49,7 @@ export enum COMMENT_LIKE {
 export class Comment {
     constructor(
         private id: string,
+        private postId: string,
         private content: string,
         private likes: number,
         private dislikes: number,
@@ -61,6 +65,14 @@ export class Comment {
 
     public setId(value: string): void {
         this.id = value
+    }
+
+    public getPostId(): string {
+        return this.postId;
+    }
+
+    public setPostId(value: string): void {
+        this.postId = value
     }
 
     public getContent(): string {
@@ -138,6 +150,7 @@ export class Comment {
     public toDBModel(): CommentDB {
         return {
             id: this.id,
+            post_id: this.postId,
             creator_id: this.creatorId,
             content: this.content,
             likes: this.likes,
@@ -150,11 +163,12 @@ export class Comment {
     public toBusinessModel(): CommentModel {
         return {
             id: this.id,
+            post_id: this.postId,
             content: this.content,
             likes: this.likes,
             dislikes: this.dislikes,
-            createdAt: this.createdAt,
-            updatedAt: this.updatedAt,
+            created_at: this.createdAt,
+            updated_at: this.updatedAt,
             creator: {
                 id: this.creatorId,
                 name: this.creatorName

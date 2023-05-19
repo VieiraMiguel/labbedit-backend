@@ -2,11 +2,11 @@ import { Request, Response } from "express";
 import { ZodError } from "zod";
 import { BaseError } from "../errors/BaseError";
 import { CreateCommentSchema } from "../dtos/comments/createComment.dto";
-import { GetCommentsSchema } from "../dtos/comments/getComments.dto";
 import { EditCommentSchema } from "../dtos/comments/editComment.dto";
 import { DeleteCommentSchema } from "../dtos/comments/deleteComment.dto";
 import { LikeOrDislikeCommentSchema } from "../dtos/comments/likeOrDislikeComment.dto";
 import { CommentBusiness } from "../business/CommentBusiness";
+import { GetCommentsSchema } from "../dtos/comments/getComments.dto";
 
 
 export class CommentController {
@@ -20,7 +20,8 @@ export class CommentController {
 
             const input = CreateCommentSchema.parse({
                 content: req.body.content,
-                token: req.headers.authorization
+                token: req.headers.authorization,
+                postId: req.params.id
             })
 
             const output = await this.commentBusiness.createComment(input)
@@ -40,21 +41,21 @@ export class CommentController {
         }
     }
 
-    public getComments = async (req: Request, res: Response) => {
+    public getCommentsByPostId = async (req: Request, res: Response) => {
         try {
             const input = GetCommentsSchema.parse({
-                token: req.headers.authorization
+                token: req.headers.authorization,
+                postId: req.params.id
             })
 
-            const output = await this.commentBusiness.getComments(input);
+            const output = await this.commentBusiness.getCommentsByPostId(input)
 
-            res.status(200).send(output);
+            res.status(200).send(output)
+
         } catch (error) {
             console.log(error)
 
-            if (error instanceof ZodError) {
-                res.status(400).send(error.issues)
-            } else if (error instanceof BaseError) {
+            if (error instanceof BaseError) {
                 res.status(error.statusCode).send(error.message)
             } else {
                 res.status(500).send("Erro inesperado")

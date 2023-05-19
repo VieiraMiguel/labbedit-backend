@@ -16,19 +16,21 @@ import { USER_ROLES } from "../models/User";
 import { IdGenerator } from "../services/IdGenerator";
 import { TokenManager } from "../services/TokenManager";
 import { COMMENT_LIKE } from "../models/Comment";
+import { PostDatabase } from "../database/PostDatabase";
 
 
 export class CommentBusiness {
 
     constructor(
         private commentsDatabase: CommentDatabase,
+        //private postsDatabase: PostDatabase,
         private idGenerator: IdGenerator,
         private tokenManager: TokenManager
     ) { }
 
     public createComment = async (input: CreateCommentInputDTO): Promise<CreateCommentOutputDTO> => {
 
-        const { content, token } = input
+        const { postId, content, token } = input
 
         const payload = this.tokenManager.getPayload(token);
 
@@ -44,6 +46,7 @@ export class CommentBusiness {
 
         const comment = new Comment(
             id,
+            postId,
             content,
             0,
             0,
@@ -61,9 +64,10 @@ export class CommentBusiness {
 
         return output
     }
-    public getComments = async (input: GetCommentsInputDTO): Promise<GetCommentsOutputDTO> => {
 
-        const { token } = input
+    public getCommentsByPostId = async (input: GetCommentsInputDTO): Promise<GetCommentsOutputDTO> => {
+
+        const { token, postId } = input
 
         const payload = this.tokenManager.getPayload(token)
 
@@ -76,12 +80,13 @@ export class CommentBusiness {
         }
 
         const commentsDBwithCreatorName =
-            await this.commentsDatabase.getCommentWithCreatorName()
+            await this.commentsDatabase.getCommentsByPostId(postId)
 
         const comments = commentsDBwithCreatorName
             .map((commentWithCreatorName) => {
                 const comment = new Comment(
                     commentWithCreatorName.id,
+                    commentWithCreatorName.post_id,
                     commentWithCreatorName.content,
                     commentWithCreatorName.likes,
                     commentWithCreatorName.dislikes,
@@ -124,6 +129,7 @@ export class CommentBusiness {
 
         const comment = new Comment(
             commentDB.id,
+            commentDB.post_id,
             commentDB.content,
             commentDB.likes,
             commentDB.dislikes,
@@ -193,6 +199,7 @@ export class CommentBusiness {
 
         const comment = new Comment(
             commentDBWithCreatorName.id,
+            commentDBWithCreatorName.post_id,
             commentDBWithCreatorName.content,
             commentDBWithCreatorName.likes,
             commentDBWithCreatorName.dislikes,

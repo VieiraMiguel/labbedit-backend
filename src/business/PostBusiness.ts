@@ -60,6 +60,7 @@ export class PostBusiness {
 
         return output
     }
+    
     public getPosts = async (input: GetPostsInputDTO): Promise<GetPostsOutputDTO> => {
 
         const { token } = input

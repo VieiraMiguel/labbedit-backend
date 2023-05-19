@@ -21,3 +21,7 @@ app.use('/users', userRouter)
 app.use('/posts', postRouter)
 
 app.use('/comments', commentRouter)
+
+app.get("/ping", (req, res) => {
+    res.send("Pong!")
+  })
