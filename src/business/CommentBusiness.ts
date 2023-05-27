@@ -23,7 +23,7 @@ export class CommentBusiness {
 
     constructor(
         private commentsDatabase: CommentDatabase,
-        //private postsDatabase: PostDatabase,
+        private postsDatabase: PostDatabase,
         private idGenerator: IdGenerator,
         private tokenManager: TokenManager
     ) { }
@@ -42,6 +42,13 @@ export class CommentBusiness {
             throw new UnauthorizedError();
         }
 
+        const postDBWithCreatorName =
+            await this.postsDatabase.findPostWithCreatorNameById(postId)
+
+        if (!postDBWithCreatorName) {
+            throw new NotFoundError("post com essa id não existe")
+        }
+
         const id = this.idGenerator.generate();
 
         const comment = new Comment(
@@ -57,6 +64,23 @@ export class CommentBusiness {
         )
 
         const commentDB = comment.toDBModel()
+
+        const updateCommentCount = new Post(
+            postDBWithCreatorName.id,
+            postDBWithCreatorName.content,
+            postDBWithCreatorName.likes,
+            postDBWithCreatorName.dislikes,
+            postDBWithCreatorName.comments,
+            postDBWithCreatorName.created_at,
+            postDBWithCreatorName.updated_at,
+            postDBWithCreatorName.creator_id,
+            postDBWithCreatorName.creator_name
+        )
+
+        updateCommentCount.addCommentCount()
+
+        const updatedPostDB = updateCommentCount.toDBModel()
+        await this.postsDatabase.editPost(updatedPostDB)
 
         await this.commentsDatabase.createComment(commentDB)
 
@@ -173,6 +197,30 @@ export class CommentBusiness {
             }
         }
 
+        const postDBWithCreatorName =
+            await this.postsDatabase.findPostWithCreatorNameById(commentDB.post_id)
+
+        if (!postDBWithCreatorName) {
+            throw new NotFoundError("post com essa id não existe")
+        }
+
+        const updateCommentCount = new Post(
+            postDBWithCreatorName.id,
+            postDBWithCreatorName.content,
+            postDBWithCreatorName.likes,
+            postDBWithCreatorName.dislikes,
+            postDBWithCreatorName.comments,
+            postDBWithCreatorName.created_at,
+            postDBWithCreatorName.updated_at,
+            postDBWithCreatorName.creator_id,
+            postDBWithCreatorName.creator_name
+        )
+
+        updateCommentCount.removeCommentCount()
+
+        const updatedPostDB = updateCommentCount.toDBModel()
+        await this.postsDatabase.editPost(updatedPostDB)
+
         await this.commentsDatabase.deleteComment(idToDelete)
 
         const output: DeleteCommentOutputDTO = undefined
@@ -195,6 +243,12 @@ export class CommentBusiness {
 
         if (!commentDBWithCreatorName) {
             throw new NotFoundError("comment com essa id não existe")
+        }
+
+        const userId = payload.id
+
+        if (commentDBWithCreatorName.creator_id === userId) {
+            throw new BadRequestError("Quem criou o post não pode dar 'like' ou 'dislike' no mesmo")
         }
 
         const comment = new Comment(

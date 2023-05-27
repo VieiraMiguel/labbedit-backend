@@ -11,8 +11,10 @@ export const commentRouter = express.Router()
 const commentController = new CommentController(
     new CommentBusiness(
         new CommentDatabase(),
+        new PostDatabase(),
         new IdGenerator(),
-        new TokenManager()
+        new TokenManager(),
+        
     )
 )
 

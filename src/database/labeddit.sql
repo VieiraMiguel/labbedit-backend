@@ -89,6 +89,36 @@ VALUES (
         'Labeddit is ON!',
         5,
         0
+    ), (
+        'p002',
+        'u003',
+        'Watching over my hero...',
+        5,
+        0
+    ), (
+        'p003',
+        'u002',
+        'Slaying Ganon monsters!',
+        4,
+        1
+    ), (
+        'p004',
+        'u006',
+        'Space pirates...They never stop.',
+        3,
+        2
+    ), (
+        'p005',
+        'u005',
+        'Just another day in a war whithout end...',
+        0,
+        5
+    ), (
+        'p006',
+        'u004',
+        'I have to stop the Outer Heaven army!',
+        4,
+        1
     );
 
 CREATE TABLE
@@ -124,6 +154,8 @@ CREATE TABLE
     );
 
 SELECT * FROM posts;
+
+SELECT * FROM comments;
 
 SELECT * FROM users;
 
