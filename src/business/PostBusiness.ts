@@ -2,13 +2,14 @@ import { PostDatabase } from "../database/PostDatabase";
 import { CreatePostInputDTO, CreatePostOutputDTO } from "../dtos/posts/createPost.dto";
 import { DeletePostInputDTO, DeletePostOutputDTO } from "../dtos/posts/deletePost.dto";
 import { EditPostInputDTO, EditPostOutputDTO } from "../dtos/posts/editPost.dto";
+import { GetPostByIdInputDTO, GetPostByIdOutputDTO } from "../dtos/posts/getPostById";
 import { GetPostsOutputDTO, GetPostsInputDTO } from "../dtos/posts/getPosts.dto";
 import { LikeOrDislikePostInputDTO, LikeOrDislikePostOutputDTO } from "../dtos/posts/likeOrDislikePost.dto";
 import { BadRequestError } from "../errors/BadRequestError";
 import { ForbiddenError } from "../errors/ForbiddenError";
 import { NotFoundError } from "../errors/NotFoundError";
 import { UnauthorizedError } from "../errors/UnauthorizedError";
-import { POST_LIKE } from "../models/Post";
+import { POST_LIKE, PostDBWithCreatorName } from "../models/Post";
 import { LikeDislikeDB } from "../models/Post";
 import { Post } from "../models/Post";
 import { USER_ROLES } from "../models/User";
@@ -96,6 +97,45 @@ export class PostBusiness {
             })
 
         const output: GetPostsOutputDTO = posts
+
+        return output
+    }
+
+    public getPostById = async (input: GetPostByIdInputDTO) => {
+
+        const { id, token } = input
+
+        const payload = this.tokenManager.getPayload(token)
+
+        if (token === undefined) {
+            throw new BadRequestError("'token' ausente")
+        }
+
+        if (payload === null) {
+            throw new UnauthorizedError()
+        }
+
+        const postDBwithCreatorName =
+            await this.postsDatabase.getPostWithCreatorNameById(id)
+
+        const posts = postDBwithCreatorName
+            .map((postWithCreatorName) => {
+                const post = new Post(
+                    postWithCreatorName.id,
+                    postWithCreatorName.content,
+                    postWithCreatorName.likes,
+                    postWithCreatorName.dislikes,
+                    postWithCreatorName.comments,
+                    postWithCreatorName.created_at,
+                    postWithCreatorName.updated_at,
+                    postWithCreatorName.creator_id,
+                    postWithCreatorName.creator_name
+                )
+
+                return post.toBusinessModel()
+            })
+
+        const output: GetPostByIdOutputDTO = posts
 
         return output
     }
@@ -189,8 +229,15 @@ export class PostBusiness {
         const postDBWithCreatorName =
             await this.postsDatabase.findPostWithCreatorNameById(postId)
 
+
         if (!postDBWithCreatorName) {
             throw new NotFoundError("post com essa id não existe")
+        }
+
+        const userId = payload.id
+
+        if (postDBWithCreatorName.creator_id === userId) {
+            throw new BadRequestError("Quem criou o post não pode dar 'like' ou 'dislike' no mesmo")
         }
 
         const post = new Post(

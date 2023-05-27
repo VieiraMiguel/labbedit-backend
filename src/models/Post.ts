@@ -115,6 +115,14 @@ export class Post {
         this.comments = value
     }
 
+    public addCommentCount() {
+        this.comments++
+    }
+
+    public removeCommentCount() {
+        this.comments--
+    }
+
     public getCreatedAt(): string {
         return this.createdAt;
     }

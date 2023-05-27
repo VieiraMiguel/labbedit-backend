@@ -1,6 +1,5 @@
 import { COMMENT_LIKE, CommentDB, CommentDBWithCreatorName, LikeDislikeDB } from "../models/Comment";
 import { BaseDatabase } from "./BaseDatabase";
-import { PostDatabase } from "./PostDatabase";
 import { UserDatabase } from "./UserDatabase";
 
 export class CommentDatabase extends BaseDatabase {
@@ -8,6 +7,7 @@ export class CommentDatabase extends BaseDatabase {
     public static TABLE_COMMENTS = 'comments'
 
     public static TABLE_LIKES_DISLIKES_COMMENT = "likes_dislikes_comment"
+    
 
     public async createComment(commentDB: CommentDB): Promise<void> {
 
@@ -87,7 +87,7 @@ export class CommentDatabase extends BaseDatabase {
                 "=",
                 `${UserDatabase.TABLE_USERS}.id`
             )
-            .where({ post_id: postId })//({ [`${PostDatabase.TABLE_POSTS}.id`]: postId })
+            .where({ post_id: postId })
 
         return result as CommentDBWithCreatorName[]
     }
