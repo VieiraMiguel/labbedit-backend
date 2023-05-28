@@ -6,13 +6,13 @@ O Labeddit é uma rede social com o objetivo de promover a conexão e interaçã
 
 Além disso também é possível criar comentários em publicações assim como curtir ou não curtir os comentários.<br><br>
 
-## Documentação do Postman
-https://documenter.getpostman.com/view/25826613/2s93m7X212
-<br><br>
-
 ## Deploy da Aplicação
 Este link é melhor acessível e utilizável no [Postman](https://www.postman.com/) ou em outra plataforma de API similar.<br><br>
 https://labeddit-api-trol.onrender.com
+<br><br>
+
+## Documentação do Postman
+https://documenter.getpostman.com/view/25826613/2s93m7X212
 <br><br>
 
 ## Para Acessar a Aplicação Localmente
