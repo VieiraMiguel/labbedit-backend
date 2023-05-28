@@ -35,3 +35,8 @@ $ npm run dev
 
 # A aplicaçāo será iniciada na porta 3003, http://localhost:3003
 ```
+<br>
+
+##
+
+Acesse [aqui](https://github.com/VieiraMiguel/labeddit-backend) o repositório front-end desta aplicação
